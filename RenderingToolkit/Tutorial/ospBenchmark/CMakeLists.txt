@@ -2,7 +2,7 @@
 ## SPDX-License-Identifier: Apache-2.0
 
 cmake_minimum_required(VERSION 3.16)
-project(OSPRAY_EXAMPLES LANGUAGES CXX)
+project(OSPRAY_BENCHMARK LANGUAGES CXX)
 
 include(CMakePrintHelpers)
 include(GNUInstallDirs)
@@ -47,8 +47,7 @@ link_directories(${OSPRAY_ROOT}/lib ${ONEAPI_ROOT}/rkcommon/latest/lib)
 
 include(cmake/ospray_macros.cmake)
 
-include(glfw)
-
+include(benchmark)
 
 set(OpenGL_GL_PREFERENCE "LEGACY")
 find_package(OpenGL 2 REQUIRED)
@@ -60,11 +59,18 @@ set(OpenGL_GL_PREFERENCE "LEGACY")
 add_subdirectory(arcball_camera)
 add_subdirectory(external)
 
-add_executable(ospExamples
+add_executable(ospBenchmark
   ${OSPRAY_RESOURCE}
-  GLFWOSPRayWindow.cpp
-  imgui_impl_glfw_gl3.cpp
-  ospExample.cpp
+
+  ospBenchmark.cpp
+  BaseFixture.cpp
+
+  benchmarks/Simple.cpp
+  benchmarks/BoxesAo.cpp
+  benchmarks/CornellBoxSpp.cpp
+  benchmarks/GravitySpheresVolume.cpp
+  benchmarks/PerlinNoiseVolumes.cpp
+  benchmarks/ClippingGeometries.cpp
 
   ospray_testing/ospray_testing.h
 
@@ -105,17 +111,9 @@ add_executable(ospExamples
   ospray_testing/rawToAMR.h
 )
 
-target_link_libraries(ospExamples
+target_link_libraries(ospBenchmark
 PUBLIC arcball_camera
+PUBLIC benchmark
 PUBLIC ospray_testing
-PUBLIC imgui
-PUBLIC glfw
-  ${OPENGL_LIBRARIES}
 )
 
-ospray_sign_target(ospExamples)
-
-install(TARGETS ospExamples
-  DESTINATION ${CMAKE_INSTALL_BINDIR}
-  COMPONENT apps
-)
